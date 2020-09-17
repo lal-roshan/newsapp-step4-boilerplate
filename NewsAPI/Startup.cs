@@ -40,11 +40,17 @@ namespace NewsAPI
             services.AddScoped<IUserService, UserService>();
 
             services.AddControllers();
+
+            /*
+             * Exception handler was not getting invoked with this had to add the code that follows
+            //services.AddSingleton<ExceptionHandler>();
+            */
+            services.AddMvc(options =>
+            {
+                options.Filters.Add<ExceptionHandler>();
+            });
             //provide options for DbContext
             //Register all dependencies here
-
-
-            services.AddSingleton<ExceptionHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

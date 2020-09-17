@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Service;
-using Service.Exceptions;
-using System;
 using System.Threading.Tasks;
 namespace NewsAPI.Controllers
 {

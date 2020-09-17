@@ -1,0 +1,33 @@
+image: mcr.microsoft.com/dotnet/core/sdk:3.1
+
+stages:
+    - build
+    - test
+    - deploy
+
+before-script:
+    - dotnet restore
+
+build_job:
+    stage: build
+    script:
+        - dotnet build
+
+test_job:
+    stage: test
+    script:
+        - dotnet test
+
+deploy_job:
+    stage: deploy
+    variables:
+        deploy_path: "NewsAPI/"
+    artifacts:
+        paths:
+            - /builds/153064/newsapp-step4-boilerplate/NewsAPI/bin/release/netcoreapp3.1/NewsAPI.dll
+            - /builds/153064/newsapp-step4-boilerplate/NewsAPI/bin/release/netcoreapp3.1/DAL.dll
+            - /builds/153064/newsapp-step4-boilerplate/NewsAPI/bin/release/netcoreapp3.1/Entities.dll
+            - /builds/153064/newsapp-step4-boilerplate/NewsAPI/bin/release/netcoreapp3.1/Service.dll
+    script:
+        - cd $deploy_path
+        - dotnet publish -c release
