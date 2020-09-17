@@ -5,27 +5,71 @@ using System.Threading.Tasks;
 
 namespace Service
 {
-    //Inherit the respective interface and implement the methods in 
-    // this class i.e ReminderService by inheriting IReminderService
-    public class ReminderService
+    /// <summary>
+    /// This class is used to implement all input validation operations for Reminder CRUD operations
+    /// </summary>
+    public class ReminderService : IReminderService
     {
-        /*
-       * ReminderRepository should  be injected through constructor injection. 
-       * Please note that we should not create ReminderRepository object using the new keyword
-       */
-        public ReminderService(IReminderRepository reminderRepository)
+        /// <summary>
+        /// readonly property for repository
+        /// </summary>
+        readonly IReminderRepository repository;
+
+        /// <summary>
+        /// Paramterised constructor for injecting repository
+        /// </summary>
+        /// <param name="repository"></param>
+        public ReminderService(IReminderRepository repository)
         {
-            
+            this.repository = repository;
         }
-        /* Implement all the methods of respective interface asynchronously*/
 
-        // Implement AddReminder method which should be used to save a new reminder.    
+        /// <summary>
+        /// Method to add a reminder to a news
+        /// </summary>
+        /// <param name="reminder">The reminder object to be added</param>
+        /// <returns>The reminder that was added</returns>
+        public async Task<Reminder> AddReminder(Reminder reminder)
+        {
+            Reminder presentRem = await repository.GetReminderByNewsId(reminder.NewsId);
+            if (presentRem != null)
+            {
+                throw new ReminderAlreadyExistsException($"This news: {reminder.NewsId} already have a reminder");
+            }
+            else
+            {
+                return await repository.AddReminder(reminder);
+            }
+        }
 
-        // Implement GetReminderByNewsId method which should be used to get all reminder by newsId.
+        /// <summary>
+        /// Method for fetching reminder based on the news id
+        /// </summary>
+        /// <param name="newsId">The id of the news whose reminder is to be fetched</param>
+        /// <returns>The reminder corressponding to the news id</returns>
+        public async Task<Reminder> GetReminderByNewsId(int newsId)
+        {
+            Reminder reminder = await repository.GetReminderByNewsId(newsId);
+            if (reminder != null)
+            {
+                return reminder;
+            }
+            throw new ReminderNotFoundException($"No reminder found for news: {newsId}");
+        }
 
-        // Implement RemoveReminder method which method should be used to delete an existing reminder withits Id
-
-        // Throw your own custom Exception whereever its required in AddReminder,GetReminderByNewsId and RemoveReminder 
-        // functionalities
+        /// <summary>
+        /// Method to remove a reminder
+        /// </summary>
+        /// <param name="reminderId">The id of the reminder to be removed</param>
+        /// <returns>True if reminder was removed</returns>
+        public async Task<bool> RemoveReminder(int reminderId)
+        {
+            Reminder reminder = await repository.GetReminder(reminderId);
+            if (reminder != null)
+            {
+                return await repository.RemoveReminder(reminder);
+            }
+            throw new ReminderNotFoundException($"No reminder found with id: {reminderId}");
+        }
     }
 }

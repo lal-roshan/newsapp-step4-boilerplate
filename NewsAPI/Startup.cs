@@ -29,10 +29,20 @@ namespace NewsAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<NewsDbContext>(
+                   options => options.UseSqlServer(Configuration.GetConnectionString("NewsAppAOPDbCon"))
+                   );
+            services.AddScoped<INewsRepository, NewsRepository>();
+            services.AddScoped<IReminderRepository, ReminderRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<INewsService, NewsService>();
+            services.AddScoped<IReminderService, ReminderService>();
+            services.AddScoped<IUserService, UserService>();
+
             services.AddControllers();
             //provide options for DbContext
             //Register all dependencies here
-            
+
 
             services.AddSingleton<ExceptionHandler>();
         }
