@@ -5,7 +5,7 @@ stages:
     - test
     - deploy
 
-before-script:
+before_script:
     - dotnet restore
 
 build_job:
